@@ -392,12 +392,102 @@ def product_title(product_info: str, num: str = None, img_urls: List[str] = None
     return make_request(endpoint, params)
 
 def ppt_command(command: str) -> Dict[str, Any]:
-    """指令智能生成PPT"""
-    return ai_search(f"生成PPT大纲：{command}", model=DEFAULT_MODEL, search_source="baidu_search_v2")
+    """指令智能生成PPT（使用专用API，处理流式响应）"""
+    import requests
+    
+    endpoint = "/v2/tools/ai_command_ppt/command_ppt"
+    base_url = "https://qianfan.baidubce.com"
+    
+    url = f"{base_url}{endpoint}"
+    headers = {
+        "Content-Type": "application/json",
+        "X-Appbuilder-Authorization": f"Bearer {API_KEY}"
+    }
+    data = {"query": command}
+    
+    rate_limit()
+    
+    try:
+        response = requests.post(url, headers=headers, json=data, stream=True, timeout=180)
+        response.raise_for_status()
+        
+        result_data = {}
+        for line in response.iter_lines():
+            if line:
+                try:
+                    obj = json.loads(line)
+                    data_obj = obj.get('data', {})
+                    result_str = data_obj.get('result', '')
+                    if result_str:
+                        result_obj = json.loads(result_str)
+                        if 'title' in result_obj:
+                            result_data['title'] = result_obj.get('title')
+                        if 'result' in result_obj:
+                            result_data['outline'] = result_obj.get('result')
+                        # ppt_url在result中
+                        if 'ppt_url' in result_obj:
+                            result_data['ppt_url'] = result_obj['ppt_url'].replace('\\u0026', '&')
+                        if 'cover_urls' in result_obj:
+                            result_data['cover_urls'] = [url.replace('\\u0026', '&') for url in result_obj['cover_urls']]
+                except:
+                    pass
+        
+        if not result_data:
+            return {"error": "未获取到有效响应"}
+        
+        return result_data
+        
+    except requests.exceptions.RequestException as e:
+        return {"error": str(e)}
 
 def ppt_smart(topic: str) -> Dict[str, Any]:
-    """智能生成PPT"""
-    return ai_search(f"为以下主题生成PPT内容：{topic}", model=DEFAULT_MODEL, search_source="baidu_search_v2")
+    """智能生成PPT（使用专用API，处理流式响应）"""
+    import requests
+    
+    endpoint = "/v2/tools/ai_command_ppt/command_ppt"
+    base_url = "https://qianfan.baidubce.com"
+    
+    url = f"{base_url}{endpoint}"
+    headers = {
+        "Content-Type": "application/json",
+        "X-Appbuilder-Authorization": f"Bearer {API_KEY}"
+    }
+    data = {"query": f"帮我生成一份关于{topic}的PPT"}
+    
+    rate_limit()
+    
+    try:
+        response = requests.post(url, headers=headers, json=data, stream=True, timeout=180)
+        response.raise_for_status()
+        
+        result_data = {}
+        for line in response.iter_lines():
+            if line:
+                try:
+                    obj = json.loads(line)
+                    data_obj = obj.get('data', {})
+                    result_str = data_obj.get('result', '')
+                    if result_str:
+                        result_obj = json.loads(result_str)
+                        if 'title' in result_obj:
+                            result_data['title'] = result_obj.get('title')
+                        if 'result' in result_obj:
+                            result_data['outline'] = result_obj.get('result')
+                        # ppt_url在result中
+                        if 'ppt_url' in result_obj:
+                            result_data['ppt_url'] = result_obj['ppt_url'].replace('\\u0026', '&')
+                        if 'cover_urls' in result_obj:
+                            result_data['cover_urls'] = [url.replace('\\u0026', '&') for url in result_obj['cover_urls']]
+                except:
+                    pass
+        
+        if not result_data:
+            return {"error": "未获取到有效响应"}
+        
+        return result_data
+        
+    except requests.exceptions.RequestException as e:
+        return {"error": str(e)}
 
 def similar_image(image_input: str) -> Dict[str, Any]:
     """相似图搜索（使用专用API）
