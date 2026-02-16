@@ -274,8 +274,26 @@ def baike_entry(query: str) -> Dict[str, Any]:
     return make_request(endpoint, params, method="GET", base_url=base_url)
 
 def miaodong(query: str) -> Dict[str, Any]:
-    """秒懂百科"""
-    return ai_search(f"秒懂百科：{query}", model=DEFAULT_MODEL, search_source="baidu_search_v2")
+    """秒懂百科（视频百科）
+    
+    注意：专用秒懂百科API (/v1/baike/video/*) 目前返回500错误，
+    此处使用智能搜索来获取秒懂视频相关内容作为后备方案
+    """
+    # 尝试专用API
+    endpoint = "/v1/baike/video/get_info"
+    base_url = "https://appbuilder.baidu.com"
+    
+    params = {
+        "search_key": query
+    }
+    
+    result = make_request(endpoint, params, method="GET", base_url=base_url)
+    
+    # 如果返回500错误，使用智能搜索作为后备
+    if result.get("error") and "500" in str(result.get("error", "")):
+        return ai_search(f"秒懂视频：{query}", model=DEFAULT_MODEL, search_source="baidu_search_v2")
+    
+    return result
 
 def star_graph(theme: str) -> Dict[str, Any]:
     """百科星图列表查询"""
