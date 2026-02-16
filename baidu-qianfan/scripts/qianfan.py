@@ -8,28 +8,28 @@
 - 百度搜索: https://cloud.baidu.com/doc/qianfan-api/s/Wmbq4z7e5
 """
 
-导入argparse
-导入json
+import argparse
+import json
 import sys
 import time
 import urllib.request
 import urllib.error
 import urllib.parse
-from输入import可选，字典，任意，列表
+from typing import Optional, Dict, Any, List
 
 # API配置
-API_KEY = "替换为你的API"
-BASE_URL = “https://qianfan.baidubce.com”
-RATE_LIMIT_DELAY = 0.34  # 3 QPS = 每次请求约0.34秒
+API_KEY = "YOUR_API_KEY_HERE"
+BASE_URL = "https://qianfan.baidubce.com"
+RATE_LIMIT_DELAY = 0.34  # 3 QPS = ~0.34s between requests
 
 # 默认模型
-DEFAULT_MODEL = “ernie-4.5-turbo-32k”
+DEFAULT_MODEL = "ernie-4.5-turbo-32k"
 
 # 功能映射
 API_FUNCTIONS = {
-    “智能搜索”: {
-        “名称”: "智能搜索生成",
-“每日配额”：100,
+    "smart_search": {
+        "name": "智能搜索生成",
+        "daily_quota": 100,
         "doc": "https://cloud.baidu.com/doc/qianfan-api/s/Hmbu8m06u",
         "description": "AI增强的智能搜索，传入模型名称时启用"
     },
@@ -261,10 +261,17 @@ def baike(query: str) -> Dict[str, Any]:
     
     return make_request(endpoint, params, method="GET", base_url=base_url)
 
-def baike_entry(entry_id: str) -> Dict[str, Any]:
-    """百科词条详情"""
-    # 使用智能搜索查询词条详情
-    return ai_search(f"查询百科词条：{entry_id}", model=DEFAULT_MODEL, search_source="baidu_search_v2")
+def baike_entry(query: str) -> Dict[str, Any]:
+    """百科词条详情（使用专用百科API，与baike相同）"""
+    endpoint = "/v2/baike/lemma/get_content"
+    base_url = "https://appbuilder.baidu.com"
+    
+    params = {
+        "search_type": "lemmaTitle",
+        "search_key": query
+    }
+    
+    return make_request(endpoint, params, method="GET", base_url=base_url)
 
 def miaodong(query: str) -> Dict[str, Any]:
     """秒懂百科"""
