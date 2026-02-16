@@ -1,0 +1,35 @@
+{
+  "name": "baidu-qianfan",
+  "version": "1.0.0",
+  "description": "百度千帆API工具集，提供智能搜索、百科查询、热榜、内容生成等多种AI能力",
+  "author": "iFlow CLI User",
+  "created": "2026-02-16",
+  "api_key": "YOUR_API_KEY_HERE",
+  "rate_limit": "3 QPS",
+  "daily_quotas": {
+    "smart_search": 100,
+    "baidu_search": 1000,
+    "smart_search_pro": 100,
+    "academic": 1000,
+    "baike": 1000,
+    "baike_entry": 100,
+    "miaodong": 100,
+    "star_graph": 100,
+    "category_hot": 10,
+    "hot_list": 10,
+    "video_note": "10800秒",
+    "product_copy": 10,
+    "product_title": 10,
+    "ppt_command": 5,
+    "ppt_smart": 50,
+    "similar_image": 100
+  },
+  "scripts": [
+    "scripts/qianfan.py"
+  ],
+  "documentation": [
+    "https://cloud.baidu.com/doc/qianfan-api/s/Hmbu8m06u",
+    "https://cloud.baidu.com/doc/qianfan-api/s/Wmbq4z7e5",
+    "https://cloud.baidu.com/doc/qianfan/s/bmh4stpbh"
+  ]
+}
