@@ -388,9 +388,53 @@ def ppt_smart(topic: str) -> Dict[str, Any]:
     """智能生成PPT"""
     return ai_search(f"为以下主题生成PPT内容：{topic}", model=DEFAULT_MODEL, search_source="baidu_search_v2")
 
-def similar_image(image_url: str) -> Dict[str, Any]:
-    """相似图搜索"""
-    return ai_search(f"搜索相似图片：{image_url}", model=None, search_source="baidu_search_v2")
+def similar_image(image_input: str) -> Dict[str, Any]:
+    """相似图搜索（使用专用API）
+    
+    Args:
+        image_input: 图片URL或Base64编码的图片数据
+    """
+    import urllib.request
+    import base64
+    
+    endpoint = "/v2/tools/image_similar_info"
+    base_url = "https://qianfan.baidubce.com"
+    
+    rate_limit()
+    
+    # 判断输入是URL还是Base64
+    if image_input.startswith('http://') or image_input.startswith('https://'):
+        # 是URL，先下载图片
+        try:
+            with urllib.request.urlopen(image_input, timeout=30) as response:
+                image_data = response.read()
+            image_base64 = base64.b64encode(image_data).decode('utf-8')
+        except Exception as e:
+            return {"error": f"图片下载失败: {str(e)}"}
+    else:
+        # 假设已经是Base64
+        image_base64 = image_input
+    
+    url = f"{base_url}{endpoint}"
+    headers = {
+        "Content-Type": "application/json",
+        "X-Appbuilder-Authorization": f"Bearer {API_KEY}"
+    }
+    
+    params = {"image": image_base64}
+    
+    data = json.dumps(params).encode('utf-8')
+    req = urllib.request.Request(url, data=data, headers=headers, method='POST')
+    
+    try:
+        with urllib.request.urlopen(req, timeout=60) as response:
+            result = response.read().decode('utf-8')
+            return json.loads(result)
+    except urllib.error.HTTPError as e:
+        error_body = e.read().decode('utf-8') if e.fp else ""
+        return {"error": f"HTTP {e.code}: {error_body}"}
+    except Exception as e:
+        return {"error": str(e)}
 
 def list_functions():
     """列出所有可用功能"""
