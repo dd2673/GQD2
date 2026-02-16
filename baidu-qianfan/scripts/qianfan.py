@@ -91,6 +91,12 @@ API_FUNCTIONS = {
         "doc": "https://cloud.baidu.com/doc/qianfan/s/cmi721sy9",
         "description": "星图数据查询"
     },
+    "star_graph_detail": {
+        "name": "百科星图详情查询",
+        "daily_quota": 100,
+        "doc": "https://cloud.baidu.com/doc/qianfan/s/cmi721sy9",
+        "description": "根据星图ID查询星图详情"
+    },
     "category_hot": {
         "name": "垂类热榜查询",
         "daily_quota": 10,
@@ -337,6 +343,37 @@ def star_graph(theme: str = "") -> Dict[str, Any]:
     if theme:
         params["starmap_title"] = theme
     params["page"] = 1
+    
+    url = f"{base_url}{endpoint}"
+    headers = {
+        "Authorization": f"Bearer {API_KEY}"
+    }
+    
+    rate_limit()
+    
+    try:
+        response = requests.get(url, headers=headers, params=params, timeout=30)
+        response.raise_for_status()
+        return response.json()
+    except requests.exceptions.RequestException as e:
+        return {"error": str(e)}
+
+def star_graph_detail(starmap_id: str, page: int = 1) -> Dict[str, Any]:
+    """百科星图详情查询（使用专用API）
+    
+    Args:
+        starmap_id: 星图ID，从星图列表查询获取
+        page: 页码，从1开始
+    """
+    import requests
+    
+    endpoint = "/v2/tools/baike/starmap/get_starmap_by_id"
+    base_url = "https://qianfan.baidubce.com"
+    
+    params = {
+        "starmap_id": starmap_id,
+        "page": page
+    }
     
     url = f"{base_url}{endpoint}"
     headers = {
@@ -641,6 +678,7 @@ def main():
         "baike_entry": lambda: baike_entry(args.args[0] if args.args else ""),
         "miaodong": lambda: miaodong(args.args[0] if args.args else ""),
         "star_graph": lambda: star_graph(args.args[0] if args.args else ""),
+        "star_graph_detail": lambda: star_graph_detail(args.args[0] if args.args else ""),
         "category_hot": lambda: category_hot_list(args.args[0] if args.args else ""),
         "hot_list": lambda: hot_list(),
         "video_note": lambda: video_ai_note(args.args[0] if args.args else ""),
