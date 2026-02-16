@@ -4,7 +4,7 @@
   "description": "百度千帆API工具集，提供智能搜索、百科查询、热榜、内容生成等多种AI能力",
   "author": "iFlow CLI User",
   "created": "2026-02-16",
-  "api_key": "YOUR_API_KEY_HERE",
+  "api_key": "替换成你的api key",
   "rate_limit": "3 QPS",
   "daily_quotas": {
     "smart_search": 100,
