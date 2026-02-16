@@ -235,8 +235,19 @@ def baidu_search(query: str) -> Dict[str, Any]:
     return make_request(endpoint, params)
 
 def smart_search_pro(query: str, model: str = DEFAULT_MODEL) -> Dict[str, Any]:
-    """高性能版智能搜索生成"""
-    return ai_search(query, model=model, search_source="baidu_search_v2", enable_deep_search=True)
+    """高性能版智能搜索生成（使用专用API端点）"""
+    endpoint = "/v2/ai_search/web_summary"
+    base_url = "https://qianfan.baidubce.com"
+    
+    params = {
+        "messages": [
+            {"role": "user", "content": query}
+        ],
+        "stream": False,
+        "resource_type_filter": [{"type": "web", "top_k": 10}]
+    }
+    
+    return make_request(endpoint, params, base_url=base_url)
 
 def academic_search(query: str) -> Dict[str, Any]:
     """百度学术检索（使用专用学术API）"""
