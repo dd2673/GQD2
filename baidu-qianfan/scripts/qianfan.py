@@ -322,9 +322,35 @@ def miaodong(query: str) -> Dict[str, Any]:
     
     return result
 
-def star_graph(theme: str) -> Dict[str, Any]:
-    """百科星图列表查询"""
-    return ai_search(f"百科星图：{theme}", model=DEFAULT_MODEL, search_source="baidu_search_v2")
+def star_graph(theme: str = "") -> Dict[str, Any]:
+    """百科星图列表查询（使用专用API）
+    
+    Args:
+        theme: 星图主题，如"节日"等，不传则查询所有星图列表
+    """
+    import requests
+    
+    endpoint = "/v2/tools/baike/starmap/get_starmap_by_title"
+    base_url = "https://qianfan.baidubce.com"
+    
+    params = {}
+    if theme:
+        params["starmap_title"] = theme
+    params["page"] = 1
+    
+    url = f"{base_url}{endpoint}"
+    headers = {
+        "Authorization": f"Bearer {API_KEY}"
+    }
+    
+    rate_limit()
+    
+    try:
+        response = requests.get(url, headers=headers, params=params, timeout=30)
+        response.raise_for_status()
+        return response.json()
+    except requests.exceptions.RequestException as e:
+        return {"error": str(e)}
 
 def category_hot_list(category: str = "美食", media_type: str = "抖音", time_range: int = 1) -> Dict[str, Any]:
     """垂类热榜查询（使用专用热榜API）
