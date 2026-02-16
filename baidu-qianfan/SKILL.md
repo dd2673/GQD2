@@ -12,7 +12,7 @@ disable-model-invocation: false
 
 ## API配置
 
-- **API Key**: `YOUR_API_KEY_HERE`
+- **API Key**: `替换成你的api key`
 - **速率限制**: 3 QPS
 
 ## 可用功能
