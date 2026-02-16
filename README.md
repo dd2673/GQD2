@@ -60,7 +60,7 @@ product_title "iPhone 16 Pro"
 
 ## API 配置
 
-已内置 API Key：`YOUR_API_KEY_HERE`
+替换你的apikep
 
 如需更换 API Key，编辑 `scripts/qianfan.py` 中的 `API_KEY` 变量。
 
