@@ -15,10 +15,26 @@ import time
 import urllib.request
 import urllib.error
 import urllib.parse
+import os
 from typing import Optional, Dict, Any, List
 
-# API配置
-API_KEY = "YOUR_API_KEY_HERE"
+# API配置 - 从环境变量读取，避免提交到GitHub
+API_KEY = os.environ.get("QIANFAN_API_KEY", "")
+if not API_KEY:
+    # 如果环境变量未设置，尝试从本地配置文件读取
+    config_path = os.path.join(os.path.dirname(__file__), "..", "config.json")
+    if os.path.exists(config_path):
+        try:
+            import json
+            with open(config_path, 'r', encoding='utf-8') as f:
+                config = json.load(f)
+                API_KEY = config.get("api_key", "")
+        except:
+            pass
+    
+    if not API_KEY:
+        raise ValueError("请设置环境变量 QIANFAN_API_KEY 或创建 config.json 配置文件")
+
 BASE_URL = "https://qianfan.baidubce.com"
 RATE_LIMIT_DELAY = 0.34  # 3 QPS = ~0.34s between requests
 
