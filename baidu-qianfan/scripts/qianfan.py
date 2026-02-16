@@ -8,28 +8,28 @@
 - 百度搜索: https://cloud.baidu.com/doc/qianfan-api/s/Wmbq4z7e5
 """
 
-import argparse
-import json
+导入argparse
+导入json
 import sys
 import time
 import urllib.request
 import urllib.error
 import urllib.parse
-from typing import Optional, Dict, Any, List
+from输入import可选，字典，任意，列表
 
 # API配置
-API_KEY = "YOUR_API_KEY_HERE"
-BASE_URL = "https://qianfan.baidubce.com"
-RATE_LIMIT_DELAY = 0.34  # 3 QPS = ~0.34s between requests
+API_KEY = "替换为你的API"
+BASE_URL = “https://qianfan.baidubce.com”
+RATE_LIMIT_DELAY = 0.34  # 3 QPS = 每次请求约0.34秒
 
 # 默认模型
-DEFAULT_MODEL = "ernie-4.5-turbo-32k"
+DEFAULT_MODEL = “ernie-4.5-turbo-32k”
 
 # 功能映射
 API_FUNCTIONS = {
-    "smart_search": {
-        "name": "智能搜索生成",
-        "daily_quota": 100,
+    “智能搜索”: {
+        “名称”: "智能搜索生成",
+“每日配额”：100,
         "doc": "https://cloud.baidu.com/doc/qianfan-api/s/Hmbu8m06u",
         "description": "AI增强的智能搜索，传入模型名称时启用"
     },
